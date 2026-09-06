@@ -1,0 +1,37 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080a09">
+  <meta name="description" content="A private, local expense tracker for Google Pay and cash activity.">
+  <title>{% block title %}Ledgerly{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dark.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{% url 'overview' %}" aria-label="Ledgerly overview">
+        <span class="brand-mark">L</span><span>Ledgerly</span>
+      </a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="{% url 'overview' %}" class="{% if request.resolver_match.url_name == 'overview' %}active{% endif %}">Overview</a>
+        <a href="{% url 'transactions' %}" class="{% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">Transactions</a>
+        <a href="{% url 'import-statement' %}" class="{% if request.resolver_match.url_name == 'import-statement' %}active{% endif %}">Import</a>
+      </nav>
+      <p class="privacy-note"><span class="status-dot" aria-hidden="true"></span> Personal workspace</p>
+    </aside>
+    <main class="main-content">
+      {% if messages %}<div class="messages" aria-live="polite">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="{% url 'overview' %}" class="{% if request.resolver_match.url_name == 'overview' %}active{% endif %}">Overview</a>
+      <a href="{% url 'transactions' %}" class="{% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">Activity</a>
+      <a href="{% url 'import-statement' %}" class="{% if request.resolver_match.url_name == 'import-statement' %}active{% endif %}">Import</a>
+    </nav>
+  </div>
+</body>
+</html>
