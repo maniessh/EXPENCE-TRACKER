@@ -1,0 +1,10 @@
+{% extends 'tracker/base.html' %}
+{% block title %}Transactions · Ledgerly{% endblock %}
+{% block content %}
+<header class="page-header"><div><p class="eyebrow">Activity</p><h1>Transactions</h1></div><a class="button" href="{% url 'transaction-create' %}">Add transaction</a></header>
+<form class="search-bar" method="get"><label class="sr-only" for="search">Search transactions</label><input id="search" name="q" value="{{ query }}" placeholder="Search by name"><button class="button button-secondary">Search</button></form>
+<section class="panel">
+{% if transactions %}<div class="transaction-list">{% for item in transactions %}<article class="transaction-row"><div class="transaction-icon">{{ item.name|first|upper }}</div><div class="transaction-main"><strong>{{ item.name }}</strong><span>{{ item.occurred_at|date:'d M Y, g:i A' }} · {{ item.account }} · {{ item.category|default:item.get_purpose_display }}</span></div><span class="purpose-badge">{{ item.get_purpose_display }}</span><strong class="amount {{ item.direction }}">{% if item.direction == 'out' %}−{% else %}+{% endif %}₹{{ item.amount|floatformat:2 }}</strong></article>{% endfor %}</div>
+{% else %}<div class="empty-state"><h2>No matching transactions</h2><p>Try another search or add your first transaction.</p></div>{% endif %}
+</section>
+{% endblock %}
