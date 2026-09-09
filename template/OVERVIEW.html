@@ -1,0 +1,35 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+<header class="page-header">
+  <div><p class="eyebrow">{{ month|date:'F Y' }}</p><h1>Overview<span class="heading-dot">.</span></h1></div>
+  <div class="header-actions"><a class="button button-secondary" href="{% url 'transaction-create' %}">Add cash</a><a class="button" href="{% url 'import-statement' %}">Import statement</a></div>
+</header>
+
+<section class="summary-grid" aria-label="Monthly summary">
+  <article class="summary primary"><p>Classified spending</p><strong>₹{{ spending|floatformat:2 }}</strong><span>Recorded expenses this month</span></article>
+  <article class="summary"><p>Money out</p><strong>₹{{ outgoing|floatformat:2 }}</strong><span>All outgoing payments</span></article>
+  <article class="summary"><p>Money received</p><strong>₹{{ received|floatformat:2 }}</strong><span>Not automatically treated as income</span></article>
+</section>
+
+<div class="content-grid">
+  <section class="panel category-panel">
+    <div class="section-heading"><div><p class="eyebrow">Breakdown</p><h2>Spending by category</h2></div></div>
+    {% if category_rows %}
+      <div class="category-bars">{% for row in category_rows %}<div class="bar-row"><div class="bar-label"><span>{{ row.category__name }}</span><strong>₹{{ row.total|floatformat:2 }}</strong></div><div class="bar-track"><span style="width: {{ row.percent }}%"></span></div></div>{% endfor %}</div>
+    {% else %}
+      <div class="empty-state"><div class="empty-icon" aria-hidden="true">₹</div><h3>Make your first entry.</h3><p>Your category breakdown starts with a recorded expense.</p><a class="button button-secondary" href="{% url 'transaction-create' %}">Add cash expense ↗</a></div>
+    {% endif %}
+  </section>
+  <aside class="review-card">
+    <p class="eyebrow">Attention</p><strong>{{ review_count }}</strong><h2>Needs review</h2>
+    <p>Transactions with an unclear purpose or missing expense category.</p>
+    <a href="{% url 'transactions' %}">Review activity <span aria-hidden="true">→</span></a>
+  </aside>
+</div>
+
+<section class="panel recent-panel">
+  <div class="section-heading"><div><p class="eyebrow">Latest</p><h2>Recent activity</h2></div><a href="{% url 'transactions' %}">View all</a></div>
+  {% if recent %}<div class="transaction-list">{% for item in recent %}<article class="transaction-row"><div class="transaction-icon">{{ item.name|first|upper }}</div><div class="transaction-main"><strong>{{ item.name }}</strong><span>{{ item.occurred_at|date:'d M, g:i A' }} · {{ item.category|default:item.get_purpose_display }}</span></div><strong class="amount {{ item.direction }}">{% if item.direction == 'out' %}−{% else %}+{% endif %}₹{{ item.amount|floatformat:2 }}</strong></article>{% endfor %}</div>
+  {% else %}<div class="empty-state"><h3>Your activity will appear here</h3><p>Start with a cash transaction or your Google Pay PDF.</p></div>{% endif %}
+</section>
+{% endblock %}
